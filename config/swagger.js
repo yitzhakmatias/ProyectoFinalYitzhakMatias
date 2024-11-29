@@ -10,8 +10,22 @@ const swaggerOptions = {
         },
         servers: [
             {
-                url: 'http://localhost:3000', // Replace with your deployed URL if necessary
-                description: 'Development server',
+                url: process.env.SWAGGER_BASE_URL || 'http://localhost:3000', // Replace with your deployed URL if necessary
+                description: 'Api server',
+            },
+        ],
+        components: {
+            securitySchemes: {
+                bearerAuth: {
+                    type: 'http',
+                    scheme: 'bearer',
+                    bearerFormat: 'JWT',
+                },
+            },
+        },
+        security: [
+            {
+                bearerAuth: [],
             },
         ],
     },
