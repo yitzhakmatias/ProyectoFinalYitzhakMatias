@@ -1,4 +1,4 @@
-const { Task } = require('../models');
+const { Task , User} = require('../models');
 
 // Fetch all tasks for the logged-in user
 const getTasks = async (req, res) => {
@@ -80,11 +80,46 @@ const deleteTask = async (req, res) => {
         res.status(500).json({ message: 'Error deleting task', error });
     }
 };
+// Update task status
+const updateTaskStatus = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { done } = req.body;
 
+        const task = await Task.findByPk(id);
+
+        if (!task) return res.status(404).json({ message: 'Task not found' });
+
+        await task.update({ done });
+        res.status(200).json({ message: 'Task status updated successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error updating task status', error });
+    }
+};
+// Get tasks for a specific user
+const getUserTasks = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        // Check if the user exists
+        const user = await User.findByPk(id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Fetch tasks associated with the user
+        const tasks = await Task.findAll({ where: { userId: id } });
+        res.status(200).json(tasks);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching tasks', error });
+    }
+};
 module.exports = {
     getTasks,
     createTask,
     getTaskById,
     updateTask,
     deleteTask,
+    updateTaskStatus,
+    getUserTasks
 };
